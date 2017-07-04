@@ -1,0 +1,97 @@
+
+<html>
+  <head>
+    <meta http-equiv='refresh' content='5'/>
+    <title>MiPy Energy</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+  </head>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  
+  <script>
+
+    function updateBtyVoltage(valueStr){
+      var e = document.getElementById('bty_voltage');
+      e.textContent = valueStr;
+
+      var value = parseInt(valueStr);
+      if (value > 25000){
+        e.style.background = 'Green';
+      }
+      else if (value > 22000){
+        e.style.background = 'Orange';
+      }
+      else {
+        e.style.background = 'Red';
+      }
+    }
+
+    function updateBtyCurrent(valueStr){
+      var e = document.getElementById('bty_current');
+      e.textContent = valueStr;
+      
+      var value = parseInt(valueStr);
+      if (value > 0){
+        e.style.background = 'Cyan';
+      }
+	  else if (value > -3000){
+		  e.style.background = 'Green';
+	  }
+      else if (value > -8000){
+        e.style.background = 'Orange';
+      }
+      else {
+        e.style.background = 'Red';
+      }
+    }
+
+    function updateTable(valueStr, id){
+      var e = document.getElementById(id);
+      e.textContent = valueStr;
+    }
+
+  </script>
+
+  <body>
+    <h1 id="title_header"></h1>
+    <table id="system_parameters">
+      <caption>System Parameters</caption>
+      <tr><th>Name</th><th>Value</th></tr>
+      <tr><td>Visits</td><td id="visits"> </td></tr>
+      <tr><td>Protocol</td><td id="protocol"> </td></tr>
+      <tr><td>Nominal Voltage</td><td id="bty_nominal"> </td></tr>
+      <tr><td>Charge State</td><td id="bty_charge_state"> </td></tr>
+      <tr><td>Battery Level</td><td id="bty_level"> </td></tr>
+      <tr><td>Battery Voltage</td><td id="bty_voltage"> </td></tr>
+      <tr><td>Battery Current</td><td id="bty_current"> </td></tr>
+      <tr><td>PV Max Power</td><td id="pv_max_power"> </td></tr>
+    </table>
+
+    <p>
+      <button id="button1">hit me</button>
+    </p>
+    
+  </body>
+
+  <script>
+    $(document).ready(function(){
+      updateTable(document.title, 'title_header')
+      updateTable('%s', 'visits')
+      updateTable('%s', 'bty_nominal')
+      
+      updateBtyVoltage('%s');
+      updateBtyCurrent('%s');
+      
+      updateTable('%s', 'protocol');
+      updateTable('%s', 'pv_max_power');
+      updateTable('%s', 'bty_charge_state')
+      updateTable('%s', 'bty_level')
+
+      $("#button1")
+        .on("click", function(){
+        $("#system_parameters").fadeToggle(800);
+        });
+    });
+  </script>
+
+</html>
