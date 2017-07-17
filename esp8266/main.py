@@ -1,3 +1,9 @@
+
+
+# screen /dev/tty.SLAB_USBtoUART 115200
+# ampy --port /dev/tty.SLAB_USBtoUART --baud 115200 put ~/Documents/mipy/boot.py boot.py
+
+
 # imports
 import machine
 import ssd1306
@@ -64,14 +70,23 @@ def updateSystemValues():
 	global strBtyLevel
 	
 	# get system values via I2C
-	strVbty = getSystemValue(b'vbty')
-	strVbtyNominal = getSystemValue(b'vbty_nominal')
-	strIbty = getSystemValue(b'ibty')
-	strIld = getSystemValue(b'ild')
-	strPpvmax = getSystemValue(b'ppv_max')
-	strBtyChargeState = getSystemValue(b'cs')
-	strBtyLevel = getSystemValue(b'vbty_level')
-		
+	try:
+		strVbty = getSystemValue(b'vbty')
+		strVbtyNominal = getSystemValue(b'vbty_nominal')
+		strIbty = getSystemValue(b'ibty')
+		strIld = getSystemValue(b'ild')
+		strPpvmax = getSystemValue(b'ppv_max')
+		strBtyChargeState = getSystemValue(b'cs')
+		strBtyLevel = getSystemValue(b'vbty_level')
+	except OSError:
+		strVbty = "-"
+		strVbtyNominal = "-"
+		strIbty = "-"
+		strIld = "-"
+		strPpvmax = "-"
+		strBtyChargeState = "-"
+		strBtyLevel = "-"
+
 	# update OLED with system values
 	oled.fill(0)
 	oled.text(clientAddr, 0, 0)
@@ -150,7 +165,7 @@ def main():
 		# get system values via I2C
 		updateSystemValues()
 		
-		# check for a a new client connection
+		# check for a new client connection
 		poller = select.poll()
 		poller.register(s, select.POLLIN)
 		res = poller.poll(500)
@@ -222,11 +237,17 @@ i2c = machine.I2C(freq=400000,scl=pin5_i2c,sda=pin4_i2c)
 oled = ssd1306.SSD1306_I2C(128, 64, i2c)
 
 # say hello
-strProtocol = getSystemValue(b'name');
+try:
+	strProtocol = getSystemValue(b'name');
+except OSError as e:
+	print('I2C system error: %s' % str(e))
+	strProtocol = "no device found!"
 
 oled.fill(0)
 oled.text('MiPy Energy', 0, 0)
 oled.text(strProtocol, 0, 10)
+oled.text('HTTP server', 0, 30)
+oled.text(sta_ifconfig[0], 0, 40)
 oled.show()
 
 time.sleep_ms(4000)

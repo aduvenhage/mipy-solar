@@ -15,7 +15,7 @@ ap_if.active(False)
 # set fixed IP (comment out for dynamic IP)
 sta_if.ifconfig(('192.168.8.50', '255.255.255.0', '192.168.8.1', '8.8.8.8'))
 
-sta_if.connect('JARVIS-EXT', 'Barakus123')
+sta_if.connect('JARVIS-EXT', 'xxxxxxxx')
 
 wlan_init_time = time.ticks_ms()
 while not sta_if.isconnected():

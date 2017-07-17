@@ -130,11 +130,11 @@ void setup()
 /// process typical battery/charge controller values
 void processKeyValue(const char *_pszKey, const char *_pszValue)
 {
-    Serial.print("[");
-    Serial.print(_pszKey);
-    Serial.print(" : ");
-    Serial.print(_pszValue);
-    Serial.print("]");
+    //Serial.print("[");
+    //Serial.print(_pszKey);
+    //Serial.print(" : ");
+    //Serial.print(_pszValue);
+    //Serial.print("]");
     
     if (strcmp(_pszKey, "V") == 0)  // battery voltage
     {
@@ -241,9 +241,9 @@ void loop()
       int n = readln(Serial, g_rxBuffer, sizeof(g_rxBuffer), 10, true);
       if (n > 0)
       {
-          Serial.println(g_rxBuffer);
+          //Serial.println(g_rxBuffer);
           processLine(g_rxBuffer, n);
-          Serial.println();
+          //Serial.println();
       }
       else
       {
