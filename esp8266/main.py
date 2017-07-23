@@ -19,6 +19,7 @@ SYSTEM_I2C_ADDR	= 8
 pin0_pmc = machine.Pin(0, machine.Pin.OUT)	# power meter on/off
 pin4_i2c = machine.Pin(4, machine.Pin.OUT)	# i2c SDA
 pin5_i2c = machine.Pin(5, machine.Pin.OUT)	# i2c SCL
+pin2_act = machine.Pin(2, machine.Pin.OUT)	# activity light
 
 clientAddr = ''								# last web-client addr
 reqCounter = 0								# html request counter
@@ -163,7 +164,9 @@ def main():
 	# main loop
 	while True:
 		# get system values via I2C
+		pin2_act.on();
 		updateSystemValues()
+		pin2_act.off();
 		
 		# check for a new client connection
 		poller = select.poll()
@@ -174,6 +177,8 @@ def main():
 		
 		if len(res) > 0:
 			# accept new client connection
+			pin2_act.on();
+			
 			res = s.accept()
 			client_sock = res[0]
 			client_sock.settimeout(12.0)
@@ -216,6 +221,10 @@ def main():
 				
 			# finish
 			client_sock.close()
+			pin2_act.off();
+		
+		else:
+			time.sleep_ms(500)
 		
 
 # main web request handler end
@@ -239,13 +248,16 @@ oled = ssd1306.SSD1306_I2C(128, 64, i2c)
 # say hello
 try:
 	strProtocol = getSystemValue(b'name');
+	strVersion = 'v' + getSystemValue(b'version');
 except OSError as e:
 	print('I2C system error: %s' % str(e))
-	strProtocol = "no device found!"
+	strProtocol = 'no device found!'
+	strVersion = 'v0.0';
 
 oled.fill(0)
 oled.text('MiPy Energy', 0, 0)
 oled.text(strProtocol, 0, 10)
+oled.text(strVersion, 0, 20)
 oled.text('HTTP server', 0, 30)
 oled.text(sta_ifconfig[0], 0, 40)
 oled.show()

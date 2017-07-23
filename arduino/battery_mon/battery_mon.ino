@@ -8,7 +8,7 @@
 // constants
 const long SERIAL_BAUD    = 19200;
 const int  I2C_ADDR       = 8;
-const char VERSION[]      = "0.01";
+const char VERSION[]      = "0.9";
 const char DESCRIPTION[]  = "VE.Direct Serial";
 
 // globals
@@ -45,7 +45,7 @@ void receiveEvent(int _iRxBytes)
 void requestEvent()
 {
   static char buf[24] = {0};
-  
+
   if (strcmp(g_i2cCmd, "vbty") == 0)    // battery voltage
   {
       Wire.write(itoa(g_iVbty, buf, 10));
@@ -125,6 +125,10 @@ void setup()
     Wire.onReceive(receiveEvent);
     Wire.onRequest(requestEvent);
     Wire.setTimeout(10);
+
+    // setup IO
+    pinMode(13, OUTPUT);
+    digitalWrite(13, LOW);
 }
 
 /// process typical battery/charge controller values
@@ -241,12 +245,14 @@ void loop()
       int n = readln(Serial, g_rxBuffer, sizeof(g_rxBuffer), 10, true);
       if (n > 0)
       {
+          digitalWrite(13, HIGH);
           //Serial.println(g_rxBuffer);
           processLine(g_rxBuffer, n);
           //Serial.println();
       }
       else
       {
+          digitalWrite(13, LOW);
           break;
       }
   }
@@ -264,7 +270,6 @@ void loop()
   {
       g_iVbtyLevel = 0;
   }
-
   
   delay(10);
 }
